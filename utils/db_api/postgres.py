@@ -129,10 +129,6 @@ class Database:
         return await self.execute(sql, execute=True)
 
     # ====================== ADMINS ======================
-    async def add_send_status(self):
-        sql = "INSERT INTO admins (status) VALUES (FALSE)"
-        return await self.execute(sql, execute=True)
-
     async def update_status_true(self):
         sql = "UPDATE admins SET status = TRUE"
         return await self.execute(sql, execute=True)

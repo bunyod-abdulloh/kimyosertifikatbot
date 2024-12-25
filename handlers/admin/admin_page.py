@@ -51,7 +51,6 @@ async def send_to_bot_users(message: types.Message):
 async def send_to_bot_users_two(message: types.Message, state: FSMContext):
     success_count, failed_count = await send_message_to_users(message)
 
-    await db.update_send_status(False)
     await message.answer(
         f"Habar {success_count} ta foydalanuvchiga yuborildi!\n{failed_count} ta foydalanuvchi botni bloklagan."
     )
@@ -84,7 +83,6 @@ async def send_media_to_bot_second(message: types.Message, album: List[types.Mes
 
     success_count, failed_count = await send_media_group_to_users(media_group)
 
-    await db.update_send_status(False)
     await message.answer(
         f"Media {success_count} ta foydalanuvchiga yuborildi!\n{failed_count} ta foydalanuvchi botni bloklagan."
     )

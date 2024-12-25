@@ -7,6 +7,7 @@ from loader import db, bot
 
 
 async def send_message_to_users(message: types.Message):
+    await db.update_status_true()
     all_users = await db.select_all_users()
     success_count, failed_count = 0, 0
 
@@ -22,11 +23,12 @@ async def send_message_to_users(message: types.Message):
         if index % 1500 == 0:
             await asyncio.sleep(30)
         await asyncio.sleep(0.05)
-
+    await db.update_status_false()
     return success_count, failed_count
 
 
 async def send_media_group_to_users(media_group: types.MediaGroup):
+    await db.update_status_true()
     all_users = await db.select_all_users()
     success_count, failed_count = 0, 0
 
@@ -42,5 +44,6 @@ async def send_media_group_to_users(media_group: types.MediaGroup):
         if index % 1500 == 0:
             await asyncio.sleep(30)
         await asyncio.sleep(0.05)
+    await db.update_status_false()
 
     return success_count, failed_count
