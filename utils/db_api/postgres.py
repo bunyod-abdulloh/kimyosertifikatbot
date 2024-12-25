@@ -44,15 +44,16 @@ class Database:
             """
                 CREATE TABLE IF NOT EXISTS users (
                     id SERIAL PRIMARY KEY,
-                    telegram_id BIGINT NOT NULL UNIQUE                                
+                    telegram_id BIGINT NOT NULL UNIQUE,
+                    check_status BOOLEAN DEFAULT FALSE                                
             );
             """,
             """
                 CREATE TABLE IF NOT EXISTS users_data (
                     id SERIAL PRIMARY KEY,
                     user_id BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-                    full_name VARCHAR(255) NOT NULL,
-                    phone VARCHAR(255) NOT NULL                                
+                    full_name VARCHAR(255) NULL,
+                    phone VARCHAR(255) NULL                                                    
             );
             """,
             """
@@ -107,6 +108,10 @@ class Database:
         sql = """ UPDATE users SET status = FALSE WHERE telegram_id = $1 """
         return await self.execute(sql, telegram_id, execute=True)
 
+    async def update_user_status(self, check_status, telegram_id):
+        sql = "UPDATE users SET check_status = $1 WHERE telegram_id = $2"
+        return await self.execute(sql, check_status, telegram_id, execute=True)
+
     async def delete_blocked_users(self):
         sql = "DELETE FROM users WHERE status = FALSE"
         return await self.execute(sql, execute=True)
@@ -116,9 +121,23 @@ class Database:
         return await self.execute(sql, execute=True)
 
     # ====================== USERS_DATA ======================
-    async def add_user_data(self, telegram_id, full_name, phone):
-        sql = "INSERT INTO users_data (telegram_id, full_name, phone) VALUES ($1, $2, $3) RETURNING id"
-        await self.execute(sql, telegram_id, full_name, phone, execute=True)
+    async def add_user_data(self, user_id):
+        sql = "INSERT INTO users_data (user_id) VALUES ($1)"
+        await self.execute(sql, user_id, execute=True)
+
+    async def select_user_data(self, user_id):
+        sql = "SELECT * FROM users_data WHERE user_id = $1"
+        return await self.execute(sql, user_id, fetchval=True)
+
+    async def update_user_full_name(self, full_name, user_id):
+        sql = "UPDATE users_data SET full_name = $1 WHERE user_id = $2"
+        return await self.execute(sql, full_name, user_id, execute=True)
+
+    async def update_user_phone(self, phone, user_id):
+        sql = "UPDATE users_data SET phone = $1 WHERE user_id = $2"
+        return await self.execute(sql, phone, user_id, execute=True)
+
+
 
     # ====================== ADMINS ======================
     async def update_send_status(self, send_status):

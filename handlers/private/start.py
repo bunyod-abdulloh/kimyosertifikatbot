@@ -6,6 +6,7 @@ from aiogram.utils.deep_linking import get_start_link
 
 from data.config import CHANNEL_ID, PRIVATE_CHANNEL
 from loader import dp, db, bot
+from states.users import UserStates
 
 
 async def generate_invite_button(user_id):
@@ -38,60 +39,59 @@ async def send_welcome_message(message: types.Message):
 
 @dp.message_handler(CommandStart(), state="*")
 async def bot_start(message: types.Message, state: FSMContext):
-    args = message.get_args()
-    user_id = message.from_user.id
-
-    try:
-        await db.add_user(user_id)
-    except asyncpg.exceptions.UniqueViolationError:
-        pass
+    user_id = int(message.from_user.id)
+    user = await db.select_user(user_id)
+    if user is None:
+        await message.answer(
+            text="Ism sharifingizni kiriting:\n\n<b>Namuna: Behruz Jalolov</b>"
+        )
+        await UserStates.GET_FULL_NAME.set()
     else:
-        pass
+        args = message.get_args()
 
-    if args:
-        inviter_id = int(args)
-        new_member = user_id
-        invite_count = await db.count_members(inviter=inviter_id)
+        if args:
+            inviter_id = int(args)
+            new_member = user_id
+            invite_count = await db.count_members(inviter=inviter_id)
 
-        if invite_count == 4:
-            invite_link = (await bot.create_chat_invite_link(chat_id=PRIVATE_CHANNEL, member_limit=1)).invite_link
-            markup = types.InlineKeyboardMarkup(inline_keyboard=[[
-                types.InlineKeyboardButton(text="Kanalga qo'shilish", url=invite_link)
-            ]])
-            await bot.send_message(
-                chat_id=inviter_id,
-                text=(
-                    "Tabriklaymiz! Siz ushbu sovg'ani olishga haqli deb topildingiz.\n\n"
-                    "Quyidagi tugma orqali yopiq kanalga qo'shiling."
-                ),
-                reply_markup=markup, protect_content=True
-            )
-        elif invite_count > 4:
-            await send_welcome_message(message)
-        else:
-            try:
-                await db.add_members(inviter=inviter_id, new_member=new_member, invite_count=1)
-                inviter_name = (await bot.get_chat(chat_id=inviter_id)).full_name
+            if invite_count == 4:
+                invite_link = (
+                    await bot.create_chat_invite_link(chat_id=PRIVATE_CHANNEL, member_limit=1)).invite_link
+                markup = types.InlineKeyboardMarkup(inline_keyboard=[[
+                    types.InlineKeyboardButton(text="Kanalga qo'shilish", url=invite_link)
+                ]])
                 await bot.send_message(
                     chat_id=inviter_id,
                     text=(
-                        f"Tabriklaymiz, {inviter_name}! Do’stingiz {message.from_user.full_name} "
-                        "Sizning unikal taklif havolangiz orqali botimizga qo’shildi.\n\n"
-                        f"Bonus sovg'alarni olish uchun yana {4 - invite_count} ta do’stingizni taklif qiling."
+                        "Tabriklaymiz! Siz ushbu sovg'ani olishga haqli deb topildingiz.\n\n"
+                        "Quyidagi tugma orqali yopiq kanalga qo'shiling."
                     ),
-                    reply_markup=await generate_invite_button(user_id=inviter_id)
+                    reply_markup=markup, protect_content=True
                 )
-            except asyncpg.exceptions.UniqueViolationError:
-                await message.answer("Siz bot uchun ro'yxatdan o'tgansiz!")
-                await bot.send_message(
-                    chat_id=inviter_id,
-                    text=(
-                        f"Foydalanuvchi {message.from_user.full_name} bot uchun avval ro'yxatdan o'tgan!\n\n"
-                        "Iltimos, boshqa foydalanuvchi taklif qiling!"
+            elif invite_count > 4:
+                await send_welcome_message(message)
+            else:
+                try:
+                    await db.add_members(inviter=inviter_id, new_member=new_member, invite_count=1)
+                    inviter_name = (await bot.get_chat(chat_id=inviter_id)).full_name
+                    await bot.send_message(
+                        chat_id=inviter_id,
+                        text=(
+                            f"Tabriklaymiz, {inviter_name}! Do’stingiz {message.from_user.full_name} "
+                            "Sizning unikal taklif havolangiz orqali botimizga qo’shildi.\n\n"
+                            f"Bonus sovg'alarni olish uchun yana {4 - invite_count} ta do’stingizni taklif qiling."
+                        ),
+                        reply_markup=await generate_invite_button(user_id=inviter_id)
                     )
-                )
-        await state.finish()
-    else:
-        await send_welcome_message(message)
-
-
+                except asyncpg.exceptions.UniqueViolationError:
+                    await message.answer("Siz bot uchun ro'yxatdan o'tgansiz!")
+                    await bot.send_message(
+                        chat_id=inviter_id,
+                        text=(
+                            f"Foydalanuvchi {message.from_user.full_name} bot uchun avval ro'yxatdan o'tgan!\n\n"
+                            "Iltimos, boshqa foydalanuvchi taklif qiling!"
+                        )
+                    )
+            await state.finish()
+        else:
+            await send_welcome_message(message)
