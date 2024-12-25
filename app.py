@@ -10,9 +10,10 @@ async def on_startup(dispatcher):
     await set_default_commands(dispatcher)
     await on_startup_notify(dispatcher)
     await db.create()
-
-    # await db.drop_table_groups()
+    # await db.drop_table_links()
     # await db.drop_table_users()
+    # await db.drop_table_users_data()
+    # await db.drop_table_admins()
     await db.create_tables()
 
 
