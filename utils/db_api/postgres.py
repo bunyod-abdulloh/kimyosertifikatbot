@@ -48,14 +48,6 @@ class Database:
             );
             """,
             """
-                CREATE TABLE IF NOT EXISTS users_data (
-                    id SERIAL PRIMARY KEY,
-                    telegram_id BIGINT NOT NULL,
-                    full_name VARCHAR(255) NULL,
-                    phone VARCHAR(255) NULL                                                    
-            );
-            """,
-            """
                 CREATE TABLE IF NOT EXISTS admins (
                     id SERIAL PRIMARY KEY,
                     status BOOLEAN DEFAULT FALSE                                
@@ -111,24 +103,11 @@ class Database:
         sql = "DROP TABLE users"
         return await self.execute(sql, execute=True)
 
-    # ====================== USERS_DATA ======================
-    async def add_user_data(self, telegram_id, full_name):
-        sql = "INSERT INTO users_data (telegram_id, full_name) VALUES ($1, $2)"
-        await self.execute(sql, telegram_id, full_name, execute=True)
-
-    async def select_user_data(self, telegram_id):
-        sql = "SELECT * FROM users_data WHERE telegram_id = $1"
-        return await self.execute(sql, telegram_id, fetchval=True)
-
-    async def update_user_phone(self, phone, telegram_id):
-        sql = "UPDATE users_data SET phone = $1 WHERE telegram_id = $2"
-        return await self.execute(sql, phone, telegram_id, execute=True)
-
-    async def drop_table_users_data(self):
-        sql = "DROP TABLE users_data"
-        return await self.execute(sql, execute=True)
-
     # ====================== ADMINS ======================
+    async def add_send_status(self):
+        sql = "INSERT INTO admins (status) VALUES (FALSE)"
+        await self.execute(sql, execute=True)
+
     async def update_status_true(self):
         sql = "UPDATE admins SET status = TRUE"
         return await self.execute(sql, execute=True)

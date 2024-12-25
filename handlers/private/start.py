@@ -1,3 +1,4 @@
+import asyncpg.exceptions
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import CommandStart
@@ -6,13 +7,14 @@ from asyncpg.exceptions import UniqueViolationError
 
 from data.config import CHANNEL_ID, PRIVATE_CHANNEL
 from loader import dp, db, bot
-from states.users import UserStates
 
 
 async def generate_invite_button(user_id):
     link = await get_start_link(str(user_id))
     send_link_text = (
-        f"Qiymati 2000$ bo'lgan Milliy Sertifikat kitobini olish uchun quyidagi havola orqali botga a'zo bo'ling:\n\n{link}"
+        f"Kimyo fanidan chiqarilgan “Romitan 2024” va “Buxoro 2024” MILLIY SERTIFIKAT kitoblarining yechimlarini bepul "
+        f"qo'lga kiritish uchun quyidagi havola orqali botga a'zo bo'ling\n\n{link}"
+
     )
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton(text="Yuborish", switch_inline_query=send_link_text))
@@ -37,12 +39,10 @@ async def send_welcome_message(message: types.Message):
 async def bot_start(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     args = message.get_args()
-    user = await db.select_user(user_id)
-
-    if not user:
-        await message.answer("Ism sharifingizni kiriting:\n\n<b>Namuna: Behruz Jalolov</b>")
-        await UserStates.GET_FULL_NAME.set()
-        return
+    try:
+        await db.add_user(telegram_id=message.from_user.id)
+    except asyncpg.exceptions.UniqueViolationError:
+        pass
 
     if args:
         inviter_id = int(args)
@@ -69,7 +69,8 @@ async def bot_start(message: types.Message, state: FSMContext):
                     text=(
                         f"Tabriklaymiz, {inviter_name}! Do’stingiz {message.from_user.full_name} "
                         f"Sizning unikal taklif havolangiz orqali botimizga qo’shildi.\n\n"
-                        f"Bonus sovg'alarni olish uchun yana {4 - invite_count} ta do’stingizni taklif qiling."
+                        f"Kitoblar yechimlarini qo'lga kiritish  uchun yana {4 - invite_count} ta do’stingizni "
+                        f"taklif qiling."
                     ),
                     reply_markup=await generate_invite_button(user_id=inviter_id)
                 )
@@ -85,25 +86,3 @@ async def bot_start(message: types.Message, state: FSMContext):
         await state.finish()
     else:
         await send_welcome_message(message)
-
-
-@dp.message_handler(state=UserStates.GET_FULL_NAME)
-async def get_full_name(message: types.Message):
-    await db.add_user_data(telegram_id=message.from_user.id, full_name=message.text)
-    await message.answer(
-        "Telefon raqamingizni kiriting:\n\n<b>Namuna: 998971234567</b>\n\n"
-        "(raqam namunadagi kabi kiritilishi lozim!)"
-    )
-    await UserStates.GET_PHONE.set()
-
-
-@dp.message_handler(state=UserStates.GET_PHONE)
-async def get_phone(message: types.Message, state: FSMContext):
-    if message.text.isdigit():
-        await db.update_user_phone(phone=f"+{message.text}", telegram_id=message.from_user.id)
-        await db.add_user(telegram_id=message.from_user.id)
-        await message.answer(
-            "Ma'lumotlaringiz qabul qilindi!\n\n/start buyru'gini qayta kiritib botimizdan foydalanishingiz mumkin!")
-        await state.finish()
-    else:
-        await message.answer("Raqamni namunada ko'rsatilganidek kiritishingiz lozim!")
