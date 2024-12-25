@@ -24,11 +24,11 @@ async def send_welcome_message(message: types.Message):
     markup = types.InlineKeyboardMarkup(row_width=1)
     markup.add(
         types.InlineKeyboardButton(text=channel_info.full_name, url=f"https://t.me/{channel_info.username}"),
-        types.InlineKeyboardButton(text="A'zo bo'ldim!", callback_data="subscribed")
+        types.InlineKeyboardButton(text="✅ A'zo bo'ldim!", callback_data="subscribed")
     )
     await message.answer(
         "Tabriklaymiz!!! Siz birinchi qadamni bosdingiz! Davom etish uchun yagona bo'lgan kanalimizga a'zo bo'ling.\n\n"
-        "Keyin \"А'zo bo'ldim!\" tugmasini bosing",
+        "Keyin \"✅ А'zo bo'ldim!\" tugmasini bosing",
         reply_markup=markup
     )
 
