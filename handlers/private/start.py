@@ -3,7 +3,6 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import CommandStart
 from aiogram.utils.deep_linking import get_start_link
-from asyncpg.exceptions import UniqueViolationError
 
 from data.config import CHANNEL_ID, PRIVATE_CHANNEL
 from loader import dp, db, bot
@@ -74,7 +73,8 @@ async def bot_start(message: types.Message, state: FSMContext):
                     ),
                     reply_markup=await generate_invite_button(user_id=inviter_id)
                 )
-            except UniqueViolationError:
+                await send_welcome_message(message)
+            except asyncpg.exceptions.UniqueViolationError:
                 await message.answer("Siz bot uchun ro'yxatdan o'tgansiz!")
                 await bot.send_message(
                     chat_id=inviter_id,
