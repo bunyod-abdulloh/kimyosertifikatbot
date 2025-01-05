@@ -58,6 +58,7 @@ async def bot_start(message: types.Message, state: FSMContext):
                      "Quyidagi tugma orqali yopiq kanalga qo'shiling.",
                 reply_markup=markup, protect_content=True
             )
+            await send_welcome_message(message)
         elif invite_count > 4:
             await send_welcome_message(message)
         else:

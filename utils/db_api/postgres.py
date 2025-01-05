@@ -95,9 +95,9 @@ class Database:
         sql = "SELECT COUNT(*) FROM users"
         return await self.execute(sql, fetchval=True)
 
-    async def delete_blocked_users(self):
-        sql = "DELETE FROM users WHERE status = FALSE"
-        return await self.execute(sql, execute=True)
+    async def delete_user(self, telegram_id):
+        sql = "DELETE FROM users WHERE telegram_id = $1"
+        return await self.execute(sql, telegram_id, execute=True)
 
     async def drop_table_users(self):
         sql = "DROP TABLE users"

@@ -18,6 +18,7 @@ async def send_message_to_users(message: types.Message):
         except aiogram.exceptions.BotBlocked:
             failed_count += 1
             await db.delete_user(user["telegram_id"])
+            await db.delete_inviter(user["telegram_id"])
         except Exception:
             pass
         if index % 1500 == 0:
