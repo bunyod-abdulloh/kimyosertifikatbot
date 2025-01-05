@@ -50,6 +50,7 @@ async def send_to_bot_users(message: types.Message):
 @dp.message_handler(state=AdminStates.SEND_TO_USERS, content_types=types.ContentTypes.ANY)
 async def send_to_bot_users_two(message: types.Message, state: FSMContext):
     await state.finish()
+    await message.answer(text="Habar yuborish boshlandi...", reply_markup=types.ReplyKeyboardRemove())
     success_count, failed_count = await send_message_to_users(message)
 
     await message.answer(
@@ -70,6 +71,7 @@ async def send_media_to_bot(message: types.Message):
 @dp.message_handler(state=AdminStates.SEND_MEDIA_TO_USERS, content_types=types.ContentTypes.ANY, is_media_group=True)
 async def send_media_to_bot_second(message: types.Message, album: List[types.Message], state: FSMContext):
     await state.finish()
+    await message.answer(text="Habar yuborish boshlandi...", reply_markup=types.ReplyKeyboardRemove())
     try:
         media_group = types.MediaGroup()
 
