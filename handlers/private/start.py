@@ -36,6 +36,7 @@ async def send_welcome_message(message: types.Message):
 
 @dp.message_handler(CommandStart(), state="*")
 async def bot_start(message: types.Message, state: FSMContext):
+    await state.finish()
     user_id = message.from_user.id
     args = message.get_args()
     try:
@@ -83,6 +84,5 @@ async def bot_start(message: types.Message, state: FSMContext):
                         "Iltimos, boshqa foydalanuvchi taklif qiling!"
                     )
                 )
-        await state.finish()
     else:
         await send_welcome_message(message)

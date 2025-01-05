@@ -18,7 +18,7 @@ async def send_message_to_users(message: types.Message):
         except aiogram.exceptions.BotBlocked:
             failed_count += 1
             await db.delete_user(user["telegram_id"])
-        else:
+        except Exception:
             pass
         if index % 1500 == 0:
             await asyncio.sleep(30)
@@ -39,7 +39,7 @@ async def send_media_group_to_users(media_group: types.MediaGroup):
         except aiogram.exceptions.BotBlocked:
             failed_count += 1
             await db.delete_user(user["telegram_id"])
-        else:
+        except Exception:
             pass
         if index % 1500 == 0:
             await asyncio.sleep(30)
