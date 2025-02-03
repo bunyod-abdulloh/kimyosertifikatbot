@@ -6,7 +6,7 @@ env.read_env()
 
 BOT_TOKEN = env.str("BOT_TOKEN")
 ADMINS = env.list("ADMINS")
-CHANNEL_ID = env.int("CHANNEL_ID")
+CHANNELS = env.list("CHANNELS")
 PRIVATE_CHANNEL = env.int("PRIVATE_CHANNEL")
 ADMIN_GROUP = env.str("ADMIN_GROUP")
 IP = env.str("IP")

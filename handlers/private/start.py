@@ -4,7 +4,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import CommandStart
 from aiogram.utils.deep_linking import get_start_link
 
-from data.config import CHANNEL_ID, PRIVATE_CHANNEL
+from data.config import CHANNELS, PRIVATE_CHANNEL
 from loader import dp, db, bot
 
 
@@ -21,10 +21,13 @@ async def generate_invite_button(user_id):
 
 
 async def send_welcome_message(message: types.Message):
-    channel_info = await bot.get_chat(chat_id=CHANNEL_ID)
+    first_channel = await bot.get_chat(CHANNELS[0])
+    second_channel = await bot.get_chat(CHANNELS[1])
+
     markup = types.InlineKeyboardMarkup(row_width=1)
     markup.add(
-        types.InlineKeyboardButton(text=channel_info.full_name, url=f"https://t.me/{channel_info.username}"),
+        types.InlineKeyboardButton(text=first_channel.full_name, url=f"https://t.me/{first_channel.username}"),
+        types.InlineKeyboardButton(text=second_channel.full_name, url=f"https://t.me/{second_channel.username}"),
         types.InlineKeyboardButton(text="✅ A'zo bo'ldim!", callback_data="subscribed")
     )
     await message.answer(

@@ -1,25 +1,25 @@
 from aiogram import types
 from magic_filter import F
 
-from data.config import CHANNEL_ID
+from data.config import CHANNELS
 from handlers.private.start import generate_invite_button
 from loader import bot, dp
 
 
 async def not_subcribe_message(call: types.CallbackQuery):
-    bot_fullname = (await bot.get_chat(chat_id=CHANNEL_ID)).full_name
     await call.answer(
-        text=f"Siz {bot_fullname} kanaliga a'zo bo'lmagansiz!", show_alert=True
+        text=f"Ikkala kanalga ham a'zo bo'lishingiz lozim!", show_alert=True
     )
 
 
 @dp.callback_query_handler(F.data == "subscribed")
 async def subscribe_callback(call: types.CallbackQuery):
-    user_status = (await bot.get_chat_member(chat_id=CHANNEL_ID, user_id=call.from_user.id)).status
+    first_channel = (await bot.get_chat_member(chat_id=CHANNELS[0], user_id=call.from_user.id)).status
+    second_channel = (await bot.get_chat_member(chat_id=CHANNELS[1], user_id=call.from_user.id)).status
 
-    if user_status == 'left':
+    if first_channel == 'left' or second_channel == 'left':
         await not_subcribe_message(call=call)
-    elif user_status == 'kicked':
+    elif first_channel == 'kicked' or second_channel == 'kicked':
         await not_subcribe_message(call=call)
     else:
         await call.message.edit_text(
