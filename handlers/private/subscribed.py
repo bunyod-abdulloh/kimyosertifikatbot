@@ -23,9 +23,7 @@ async def subscribe_callback(call: types.CallbackQuery):
         await not_subcribe_message(call=call)
     else:
         await call.message.edit_text(
-            text=f"So'nggi qadam!\n\nYechimlarni qo'lga kiritish uchun Kimyo-Biologiya "
-                 f"o'qiydigan 5 ta do'stingizni taklif qiling.\n\n"
-                 f"Yechimlarni yopiq kanalga joyladik takliflar soni 5 ta bo'lganda Siz ushbu "
-                 f"kanalga havola(link) olasiz.",
+            text=f"So'nggi qadam!\n\nBepul online dars kursiga qo'shilish uchun 5 ta do'stingizni taklif qiling.\n\n"
+                 f"Takliflar soni 5 ta bo'lganida Siz yopiq kanalga havola(link) olasiz.",
             reply_markup=await generate_invite_button(call.from_user.id)
         )

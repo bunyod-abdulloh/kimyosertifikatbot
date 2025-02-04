@@ -11,9 +11,7 @@ from loader import dp, db, bot
 async def generate_invite_button(user_id):
     link = await get_start_link(str(user_id))
     send_link_text = (
-        f"Kimyo fanidan chiqarilgan “Romitan 2024” va “Buxoro 2024” MILLIY SERTIFIKAT kitoblarining yechimlarini bepul "
-        f"qo'lga kiritish uchun quyidagi havola orqali botga a'zo bo'ling\n\n{link}"
-
+        f"Bepul online dars kursiga qo'shilish uchun quyidagi havola orqali botga a'zo bo'ling\n\n{link}"
     )
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton(text="Yuborish", switch_inline_query=send_link_text))
@@ -73,7 +71,7 @@ async def bot_start(message: types.Message, state: FSMContext):
                     text=(
                         f"Tabriklaymiz, {inviter_name}! Do’stingiz {message.from_user.full_name} "
                         f"Sizning unikal taklif havolangiz orqali botimizga qo’shildi.\n\n"
-                        f"Kitoblar yechimlarini qo'lga kiritish  uchun yana {4 - invite_count} ta do’stingizni "
+                        f"Bepul online dars kursiga qo'shilish uchun yana {4 - invite_count} ta do’stingizni "
                         f"taklif qiling."
                     ),
                     reply_markup=await generate_invite_button(user_id=inviter_id)
