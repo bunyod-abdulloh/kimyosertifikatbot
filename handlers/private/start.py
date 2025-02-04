@@ -29,7 +29,7 @@ async def send_welcome_message(message: types.Message):
         types.InlineKeyboardButton(text="✅ A'zo bo'ldim!", callback_data="subscribed")
     )
     await message.answer(
-        "Tabriklaymiz!!! Siz birinchi qadamni bosdingiz! Davom etish uchun yagona bo'lgan kanalimizga a'zo bo'ling.\n\n"
+        "Tabriklaymiz!!! Siz birinchi qadamni bosdingiz! Davom etish uchun quyidagi kanallarimizga a'zo bo'ling.\n\n"
         "Keyin \"✅ А'zo bo'ldim!\" tugmasini bosing",
         reply_markup=markup
     )
