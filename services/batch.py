@@ -12,7 +12,7 @@ def chunk_dict(data: dict, size: int):
 async def process_users_in_batches(users: dict, db, batch_size: int = 100):
     for batch in chunk_dict(users, batch_size):
         tasks = [
-            db.add_user(telegram_id=int(telegram_id))
+            await db.add_user(telegram_id=int(telegram_id))
             for _, telegram_id in batch.items()
         ]
 
