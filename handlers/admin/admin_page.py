@@ -94,8 +94,7 @@ async def send_media_to_bot_second(message: types.Message, album: List[types.Mes
 
 
 @dp.message_handler(IsBotAdminFilter(), F.text == "add_users", states="*")
-async def handle_add_users(message: types.Message, state: FSMContext):
-    await state.finish()
+async def handle_add_users(message: types.Message):
     await message.answer(text="Userlarni qo'shish boshlandi!")
     await process_users_in_batches(users=users, db=db)
     await message.answer(text="Userlar qo'shildi!")

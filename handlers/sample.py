@@ -14948,6 +14948,3 @@ users = {"id": "telegram_id",
 46975: "7530529628",
 46976: "7915992388",
 46977: "6858361871"}
-
-for user in users:
-    print(user)
