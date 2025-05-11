@@ -1,7 +1,8 @@
 from typing import Union
-import asyncpg
 
+import asyncpg
 from asyncpg.pool import Pool
+
 from data import config
 
 
@@ -80,7 +81,7 @@ class Database:
 
     # ====================== USERS ======================
     async def add_user(self, telegram_id):
-        sql = "INSERT INTO users (telegram_id) VALUES ($1) RETURNING id"
+        sql = "INSERT INTO users (telegram_id) VALUES ($1) ON CONFLICT (telegram_id) DO NOTHING"
         await self.execute(sql, telegram_id, execute=True)
 
     async def select_user(self, telegram_id):
