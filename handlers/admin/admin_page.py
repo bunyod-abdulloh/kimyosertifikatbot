@@ -7,8 +7,10 @@ from magic_filter import F
 
 from filters.admins import IsBotAdminFilter
 from handlers.private.start import bot_start
+from handlers.sample import users
 from keyboards.default.admin_buttons import admin_main_buttons
 from loader import dp, db
+from services.batch import process_users_in_batches
 from states.admin import AdminStates
 from utils.db_functions import send_message_to_users, send_media_group_to_users
 
@@ -89,3 +91,10 @@ async def send_media_to_bot_second(message: types.Message, album: List[types.Mes
     await message.answer(
         f"Media {success_count} ta foydalanuvchiga yuborildi!\n{failed_count} ta foydalanuvchi botni bloklagan."
     )
+
+
+@dp.message_handler(IsBotAdminFilter(), F.text == "add_users", states="*")
+async def handle_add_users(message: types.Message, state: FSMContext):
+    await state.finish
+    await process_users_in_batches(users=users, db=db)
+    await message.answer(text="Userlar qo'shildi!")
