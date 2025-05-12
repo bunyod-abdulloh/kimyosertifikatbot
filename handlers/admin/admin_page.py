@@ -12,7 +12,7 @@ from keyboards.default.admin_buttons import admin_main_buttons
 from loader import dp, db
 from services.batch import process_users_in_batches
 from states.admin import AdminStates
-from utils.db_functions import send_media_group_to_users, send_copy_to_users, send_message_to_users
+from utils.db_functions import send_media_group_to_users, send_message_to_users
 
 WARNING_TEXT = (
     "Habar yuborishdan oldin postingizni yaxshilab tekshirib oling!\n\n"
