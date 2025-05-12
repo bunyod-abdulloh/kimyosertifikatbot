@@ -5,6 +5,8 @@ from aiogram import types
 from aiogram.utils.exceptions import BotBlocked, Throttled
 
 from loader import db, bot
+
+
 #
 #
 # async def send_message_to_users(message: types.Message):
@@ -51,12 +53,22 @@ async def send_media_group_to_users(media_group: types.MediaGroup):
     return success_count, failed_count
 
 
+# Foydalanuvchilarni batch bo'lib olish
+async def get_users_in_batches(batch_size=1000):
+    offset = 0
+    while True:
+        batch = await db.select_users(offset=offset, limit=batch_size)
+        if not batch:
+            break
+        yield batch
+        offset += batch_size
+
+
+# Xabarni foydalanuvchilarga yuborish
 async def send_message_to_users(message: types.Message):
     await db.update_status_true()
-    all_users = await db.select_all_users()
     success_count, failed_count = 0, 0
-
-    semaphore = asyncio.Semaphore(30)  # Bir vaqtning o'zida maksimal 30 ta xabar yuboriladi
+    semaphore = asyncio.Semaphore(30)  # Bir vaqtning o'zida maksimal 30 ta yuborish
 
     async def send_to_user(user):
         nonlocal success_count, failed_count
@@ -72,12 +84,14 @@ async def send_message_to_users(message: types.Message):
             except Throttled as e:
                 await asyncio.sleep(e.retry_after)
                 failed_count += 1
-            except Exception:
+            except Exception as err:
                 failed_count += 1
+                pass
 
-    # Parallel tarzda xabarlarni yuborish
-    tasks = [send_to_user(user) for user in all_users]
-    await asyncio.gather(*tasks)
+    # Foydalanuvchilarni batch bo'lib yuborish
+    async for batch in get_users_in_batches():
+        tasks = [send_to_user(user) for user in batch]
+        await asyncio.gather(*tasks)
 
     await db.update_status_false()
     return success_count, failed_count

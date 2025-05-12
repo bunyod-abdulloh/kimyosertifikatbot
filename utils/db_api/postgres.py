@@ -92,6 +92,10 @@ class Database:
         sql = "SELECT telegram_id FROM users "
         return await self.execute(sql, fetch=True)
 
+    async def select_users_offset(self, offset: int = 0, limit: int = 1000):
+        sql = "SELECT telegram_id FROM users ORDER BY id LIMIT $1 OFFSET $2"
+        return await self.execute(sql, limit, offset, fetch=True)
+
     async def count_users(self):
         sql = "SELECT COUNT(*) FROM users"
         return await self.execute(sql, fetchval=True)

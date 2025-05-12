@@ -54,6 +54,7 @@ async def send_to_bot_users_two(message: types.Message, state: FSMContext):
     await state.finish()
     await message.answer(text="Xabar yuborish boshlandi...", reply_markup=types.ReplyKeyboardRemove())
     success, failed = await send_message_to_users(message=message)
+    await message.answer(text=f"Xabar yuborildi!\n\nYuborildi: {success}\nYuborilmadi: {failed}")
 
 
 @dp.message_handler(IsBotAdminFilter(), F.text == "🎞 Mediagroup post yuborish")
