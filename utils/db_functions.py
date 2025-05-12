@@ -57,7 +57,7 @@ async def send_media_group_to_users(media_group: types.MediaGroup):
 async def get_users_in_batches(batch_size=1000):
     offset = 0
     while True:
-        batch = await db.select_users(offset=offset, limit=batch_size)
+        batch = await db.select_users_offset(offset=offset, limit=batch_size)
         if not batch:
             break
         yield batch
