@@ -24,8 +24,3 @@ async def process_users_in_batches(users: dict, db, batch_size: int = 100):
         await asyncio.sleep(1)  # Har batchdan keyin dam olish
 
 
-from aiolimiter import AsyncLimiter
-
-limiter = AsyncLimiter(max_rate=30, time_period=1)
-queue = asyncio.Queue()
-
