@@ -12,7 +12,7 @@ from keyboards.default.admin_buttons import admin_main_buttons
 from loader import dp, db
 from services.batch import process_users_in_batches
 from states.admin import AdminStates
-from utils.db_functions import send_message_to_users, send_media_group_to_users
+from utils.db_functions import send_media_group_to_users, send_copy_to_users
 
 WARNING_TEXT = (
     "Habar yuborishdan oldin postingizni yaxshilab tekshirib oling!\n\n"
@@ -52,12 +52,8 @@ async def send_to_bot_users(message: types.Message):
 @dp.message_handler(state=AdminStates.SEND_TO_USERS, content_types=types.ContentTypes.ANY)
 async def send_to_bot_users_two(message: types.Message, state: FSMContext):
     await state.finish()
-    await message.answer(text="Habar yuborish boshlandi...", reply_markup=types.ReplyKeyboardRemove())
-    success_count, failed_count = await send_message_to_users(message)
-
-    await message.answer(
-        f"Habar {success_count} ta foydalanuvchiga yuborildi!\n{failed_count} ta foydalanuvchi botni bloklagan."
-    )
+    await message.answer(text="Xabar yuborish boshlandi...", reply_markup=types.ReplyKeyboardRemove())
+    await send_copy_to_users(original_message=message)
 
 
 @dp.message_handler(IsBotAdminFilter(), F.text == "🎞 Mediagroup post yuborish")
